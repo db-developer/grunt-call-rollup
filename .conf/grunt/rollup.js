@@ -15,7 +15,7 @@ module.exports  = function ( grunt, options ) {
     options: {
       external:   [ "fs", "path" /* node packages */ ],
       format:     "cjs",
-      plugins:    function() { return [ commonjs(), terser()]; },
+      plugins:    function() { return [ commonjs({ ignoreDynamicRequires: true }), terser()]; },
       sourcemap:  "inline"
     },
     build:  { src, dest }
