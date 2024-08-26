@@ -12,6 +12,6 @@ All notable changes to this project will be documented in this file.
 
 - No Fixes yet
 
-## [0.0.1] - 2024-07-30
+## [0.0.1] - 2024-08-26
 
 Initial version
