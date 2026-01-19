@@ -1,6 +1,6 @@
 # grunt-call-rollup
 
-run npm commands (like `install` or `update`) from grunt.
+Integrate Rollup builds directly into Grunt processes using the Rollup JavaScript API.
 
 [![npm version](https://img.shields.io/npm/v/grunt-call-rollup?color=blue)](https://www.npmjs.com/package/grunt-call-rollup)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -10,7 +10,7 @@ run npm commands (like `install` or `update`) from grunt.
 [![Build Status](https://travis-ci.com/db-developer/grunt-call-rollup.svg?branch=master)](https://travis-ci.com/db-developer/grunt-call-rollup)
 [![dependencies](https://img.shields.io/librariesio/release/npm/grunt-call-rollup)](https://libraries.io/)
 
-## content ##
+## Content
 
 * Usage (see further down this page)
   * [Getting started guide](#getting-started)
@@ -26,45 +26,61 @@ run npm commands (like `install` or `update`) from grunt.
 
 [Changelog](CHANGELOG.md)
 
-## getting started ##
+## Getting started
 
-This guide assumes, that you are familiar with the use of
+This guide assumes that you are familiar with the use of
 [npm](https://npmjs.com "Homepage of npm") and
 [grunt](https://gruntjs.com "Homepage of grunt").  
-The plugin can be installed by the following command:
+The plugin can be installed using the following command:
 
-<code>npm install grunt-call-rollup --save-dev</code>
+```
+npm install grunt-call-rollup --save-dev
+```
 
-Once installed, the plugin may be loaded from within your gruntfile:
+Once installed, the plugin can be loaded from within your Gruntfile:
 
-<code>grunt.loadNpmTasks( "grunt-call-rollup" );</code>
+```
+grunt.loadNpmTasks("grunt-call-rollup");
+```
 
-Setup the task configuration as described below (see usage) and run the task:
+Set up the task configuration as described below (see usage) and run the task:
 
-<code>grunt call_rollup</code>
+```
+grunt call_rollup
+```
 
-Of cause, the task can be integrated into any complex build process.
+Of course, the task can be integrated into any complex build process.
 
-## usage ##
+## Usage
 
-The following examples assume that the grunt plugin 'load-grunt-config' is used.
-Alternatively, the code can of course be integrated into the 'gruntfile.js' file.  
+The following examples assume that the Grunt plugin `load-grunt-config` is used.
+Alternatively, the configuration can be integrated directly into the `gruntfile.js`.
 
 ```javascript
 // file call_rollup.js
 module.exports = function ( grunt, options ) {
   return {
     options: {
-      config: ".conf/rollup.config.json" // path to rollup configuration file
-                        // 'config' is [required!] in either 'options' or a 'build target' 
+      config: ".conf/rollup.config.json" // path to Rollup configuration file
+                        // 'config' is [required!] in either 'options' or a build target
     },
-    always: { // target 'always' of grunt multitask 'call_rollup'
-      dryrun: true,     // outputs rollup options but does not run rollup
-      override: {       // [optional!] a full or partial  rollup configuration which
-                        // overrides the values found in the config rollup file
+    always: { // target 'always' of Grunt multitask 'call_rollup'
+      dryrun: true,     // outputs Rollup options but does not run Rollup
+      override: {       // [optional!] a full or partial Rollup configuration which
+                        // overrides the values found in the Rollup config file
       }
     }
   };
 };
 ```
-For 'rollup &lt;command&gt;' and matching command line arguments see [npm Docs](https://docs.npmjs.com/)
+
+### How the task works
+
+`grunt-call-rollup` does **not** invoke Rollup via the command line, `npx`, or a binary from
+`node_modules/.bin`. Instead, Rollup is executed directly using its JavaScript API.
+
+This means:
+
+- No shell execution is involved
+- No dependency on a globally installed Rollup binary
+- Full control over the Rollup configuration object at runtime
