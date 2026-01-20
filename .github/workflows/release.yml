@@ -27,14 +27,11 @@ jobs:
         run: npm install
 
       # 4️⃣ Run tests using Grunt
-      - name: Run tests
+      - name: Run grunt
         run: grunt
 
       # 5️⃣ Publish package to npm from build directory (e.g., 'dist')
       - name: Publish to npm
-        run: |
-          TGZ=$(ls dist/*.tgz)
-          echo "Publishing $TGZ"
-          npm publish "$TGZ"     
+        run: npm publish ./build
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
