@@ -8,7 +8,7 @@ Integrate Rollup builds directly into Grunt processes using the Rollup JavaScrip
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](https://gruntjs.com/)
 [![dependencies](https://img.shields.io/librariesio/release/npm/grunt-call-rollup)](https://libraries.io/)
 ![Build & Test](https://github.com/db-developer/grunt-call-rollup/actions/workflows/ci.yml/badge.svg)
-[![codecov](https://codecov.io/gh/db-developer/grunt-call-rollup/branch/main/graph/badge.svg)](https://codecov.io/gh/db-developer/grunt-call-rollup)
+[![codecov](https://codecov.io/gh/db-developer/grunt-call-rollup/branch/master/graph/badge.svg)](https://codecov.io/gh/db-developer/grunt-call-rollup)
 
 ## Content
 
