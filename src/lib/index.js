@@ -1,33 +1,32 @@
 /**
- *	Package interface of grunt-call-rollup<br />
- *  All static members of this module are available for 3rd party access.
+ * lib/index.js: grunt-call-rollup
  *
- *  @module grunt-call-rollup
+ * Package interface of grunt-call-rollup.
+ * All static members of this module are available for 3rd party access.
+ * 
+ * @module grunt-call-rollup
  *
  *//*
- *  © 2024, slashlib.org.
+ *  © 2024, db-developer.
  *
- *  index.js  is distributed WITHOUT ANY WARRANTY; without even the implied
- *  warranty  of  MERCHANTABILITY  or  FITNESS  FOR  A PARTICULAR  PURPOSE.
- *
+ *  Distributed  WITHOUT  ANY WARRANTY;  without  even the  implied
+ *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 "use strict";
 
-/**
- *  Module table
- *  @ignore
- */
-const _m = {
-  tasks:    require( "./tasks" )
-}
+const tasks = require( "./tasks" );
 
 /**
  *  Register a multitask for call_rollup.
+ * 
+ *  This function forwards to `tasks.registerMultiTask()` and is the main
+ *  entry point for integrating the plugin into a Gruntfile.
  *
- *  @see    Function [registerMultiTask]{@link tasks/index.md#.registerMultiTask}
- *          published by module tasks for a detailed function description.
+ *  This is a re-export of function 
+ *  [registerMultiTask]{@link tasks/index.md#.registerMultiTask}
+ *  published by module [tasks]{@link tasks/index.md}
  *
  *  @function module:grunt-call-rollup.registerMultiTask
- *  @param  {grunt} grunt
+ *  @param  {grunt} grunt - The Grunt runtime instance.
  */
-module.exports.registerMultiTask = _m.tasks.registerMultiTask
+module.exports.registerMultiTask = tasks.registerMultiTask;

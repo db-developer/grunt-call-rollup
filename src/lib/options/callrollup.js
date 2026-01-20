@@ -1,14 +1,13 @@
 /**
- *	options/callrollup.js: grunt-call-rollup
+ * lib/options/callrollup.js: grunt-call-rollup
  *
- *  @module grunt-call-rollup/options/callrollup
+ * @module grunt-call-rollup/options/callrollup
  *
  *//*
- *  © 2024, slashlib.org.
+ *  © 2024, db-developer.
  *
- *  callrollup.js  is distributed  WITHOUT ANY  WARRANTY;  without  even the
- *  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+ *  Distributed  WITHOUT  ANY WARRANTY;  without  even the  implied
+ *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 "use strict";
 
@@ -17,16 +16,12 @@
  *  @ignore
  */
 function _init_STRINGS() {
-  const toargs    = "toArgs";
-  const errormsg  = `callrollup.js - Function '${ toargs }': missing parameter`;
+  const errormsg  = `callrollup.js - Function 'toArgs': missing parameter`;
 
   return {    
     ERROR_MSG_MISSING_GRUNT:          `${ errormsg } 'grunt'.`,
     ERROR_MSG_MISSING_OPTIONS:        `${ errormsg } 'options'.`,
-    ERROR_MSG_MISSING_TASK:           `${ errormsg } 'task'.`,
-    GETOPTIONS:                       "getOptions",
-    GETTASKOPTIONS:                   "getTaskOptions",
-    TOARGS:                           `${ toargs }`
+    ERROR_MSG_MISSING_TASK:           `${ errormsg } 'task'.`
   };
 }
 
@@ -37,68 +32,70 @@ function _init_STRINGS() {
 const _STRINGS = _init_STRINGS();
 
 /**
- *  Defines and returns the set of default options which
- *  is passed to task 'call_rollup'.
+ *  Returns the default options for the `call_rollup` task.
  *
- *  @return {Object}  check_outdated default options
+ *  These defaults are used as a base and will be merged with
+ *  task-specific options provided via `task.options()`.
+ *
+ *  @function module:grunt-call-rollup/options/callrollup.getOptions
+ *  @returns {Object} default options object
+ *  @property {string|false}  config  Path to a Rollup config file or `false`
+ *  @property {boolean}       dryrun  If `true`, only log actions without executing Rollup
  */
-function getOptions() {
+module.exports.getOptions = function getOptions() {
   return {
-    config:                     false,  // typedoc configuration file
-    dryrun:                     false   // dry run - do nothing just print cmd line
+    config: false,  // typedoc configuration file
+    dryrun: false   // dry run - do nothing just print cmd line
   };
 }
 
 /**
- *  Returns grunt task specific options for 'call_rollup'.
- *  Note: 'call_rollup' default options and configuration
- *        options have already been merged!
+ *  Returns task-specific options for the `call_rollup` task.
  *
- *  @param  {grunt.task}  task
+ *  The returned object is a merge of the default options and the
+ *  options provided via `task.options()`.
  *
- *  @return {Object}  'callrollup' options for grunt task
+ *  A deep clone is used to avoid side effects caused by Grunt's
+ *  internal option handling in multi-task environments.
+ *
+ *  @function module:grunt-call-rollup/options/callrollup.getTaskOptions
+ *  @param   {grunt.task} task  The current Grunt task instance
+ *  @returns {Object}           Resolved task options
  */
-function getTaskOptions( task ) {
-  const  dfltopts = JSON.parse( JSON.stringify( getOptions()));
-  const  options  = JSON.parse( JSON.stringify( task.options()));
-  return Object.assign( dfltopts, options );
+module.exports.getTaskOptions = function getTaskOptions(task) {
+  const dfltopts = structuredClone(module.exports.getOptions());
+  const taskOpts = structuredClone(task.options());
+  return { ...dfltopts, ...taskOpts };
 }
 
 /**
- *  Convert grunt task specific options for 'call_rollup' to an 
- *  array of arguments, which will be used for calling rollup.
+ *  Converts task-specific options for the `call_rollup` task into
+ *  a plain options object used for executing Rollup.
  *
- *  @param  {grunt}                   grunt
- *  @param  {grunt.task}              task
- *  @return {Promise<Array<Object>>}  { args, opts }
+ *  If an `options` object is provided explicitly, it will be deep-cloned
+ *  using `structuredClone()` to prevent unintended mutations.
+ *  Otherwise, task options are resolved via `getTaskOptions()`.
+ *
+ *  @function module:grunt-call-rollup/options/callrollup.toArgs
+ *  @param   {grunt}        grunt    The Grunt runtime instance
+ *  @param   {grunt.task}   task     The current Grunt task instance
+ *  @param   {Object}      [options] Optional task options override
+ *  @returns {Promise<Object>}       Resolved options object
+ *  @throws  {Error}                 If required parameters are missing
  */
-function toArgs( grunt, task, options ) {
-  return new Promise(( resolve, reject ) => {
-    if (( grunt === null ) || ( grunt === undefined )) {
-          return reject( new Error( _STRINGS.ERROR_MSG_MISSING_GRUNT ));
-    }
-    else  if (( task === null ) || ( task === undefined )) {
-          return reject( new Error( _STRINGS.ERROR_MSG_MISSING_TASK ));
-    }
-    else {
-          options = options || getTaskOptions( task );
-          /* istanbul ignore if */
-          if (( options === null ) || ( options === undefined )) {
-                return reject( new Error( _STRINGS.ERROR_MSG_MISSING_OPTIONS ));
-          }
-    }
-    try { resolve({ ...options })}
-    catch( error ) { /* istanbul ignore next */ reject( error ); }
-  });
-}
+module.exports.toArgs = async function toArgs(grunt, task, options) {
+  if (grunt === null || grunt === undefined) {
+    throw new Error(_STRINGS.ERROR_MSG_MISSING_GRUNT);
+  }
+  if (task === null || task === undefined) {
+    throw new Error(_STRINGS.ERROR_MSG_MISSING_TASK);
+  }
 
-// Module exports:
-Object.defineProperty( module.exports, _STRINGS.GETOPTIONS,     {
-  value:    getOptions,
-  writable: false, enumerable: true, configurable: false });
-Object.defineProperty( module.exports, _STRINGS.GETTASKOPTIONS, {
-  value:    getTaskOptions,
-  writable: false, enumerable: true, configurable: false });
-Object.defineProperty( module.exports, _STRINGS.TOARGS,         {
-  value:    toArgs,
-  writable: false, enumerable: true, configurable: false });
+  options = options ? structuredClone(options) : module.exports.getTaskOptions(task);
+  /* istanbul ignore if - should be impossible to reach*/
+  if (options === null || options === undefined) {
+    throw new Error(_STRINGS.ERROR_MSG_MISSING_OPTIONS);
+  }
+
+  return options;
+}

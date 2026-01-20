@@ -147,6 +147,34 @@ const expect    = require( "expect.js"   );
                               .catch(( error ) => { done( error ); })
                        }).not.to.throwException();
       });
+      it( "should deep clone passed options object using structuredClone", (done) => {
+          // Original options object
+          const originalOptions = {
+            config: "rollup.config.js",
+            dryrun: true,
+            nested: { foo: "bar" }
+          };
+
+          callrollup.toArgs(env.grunt, env.task, originalOptions)
+            .then((cloned) => {
+              expect(cloned).to.be.an("object");
+
+              // Die Referenz muss unterschiedlich sein (deep clone)
+              expect(cloned).not.to.be(originalOptions);
+
+              // Inhalt muss identisch sein
+              expect(cloned.config).to.be(originalOptions.config);
+              expect(cloned.dryrun).to.be(originalOptions.dryrun);
+              expect(cloned.nested).to.eql(originalOptions.nested);
+
+              // Modifizieren wir das cloned object, darf original nicht beeinflusst werden
+              cloned.nested.foo = "changed";
+              expect(originalOptions.nested.foo).to.be("bar");
+
+              done();
+            })
+            .catch(done);
+      });
     });
   });
 })();

@@ -1,25 +1,23 @@
 /**
- *	tasks/callnpm.js: grunt-call-npm
+ * lib/tasks/callrollup.js: grunt-call-rollup
+ * 
+ * Implements the core logic of the `call_rollup` Grunt multitask.
  *
- *  @module grunt-call-npm/tasks/callnpm
+ * This module provides functions for loading Rollup, reading config files,
+ * preparing task options, executing Rollup bundles, and registering the task.
+ *
+ * @module grunt-call-rollup/tasks/callrollup
  *
  *//*
- *  © 2024, slashlib.org.
+ *  © 2024, db-developer.
  *
- *  tasks/callnpm.js  is distributed WITHOUT  ANY WARRANTY; without even the
- *  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+ *  Distributed  WITHOUT  ANY WARRANTY;  without  even the  implied
+ *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 "use strict";
 
-/**
- *  Module table
- *  @ignore
- */
-const _m = {
-  const:    require( "../constants" ),
-  options:  require( "../options"   )
-};
+const constants =  require( "../constants" );
+const options   =  require( "../options"   );
 
 /**
  *  String table initializer
@@ -49,106 +47,156 @@ function _init_STRINGS() {
 const _STRINGS = _init_STRINGS();
 
 /**
- *  Tries to load a package. The package name defaults to 'rollup'
- * 
- *  @param   {Grunt}           grunt 
- *  @param   {string}          pkg    - Name of the package to resolve. Defaults to 'rollup'
- * 
- *  @returns {Promise<Object>} Resolves with module 'rollup' by default.
- */
-module.exports.getPackage = function getPackage( grunt, pkg = _STRINGS.PACKAGE ) {
-  try { return Promise.resolve( require( pkg ))}
-  catch( e ) {
-    if ( grunt ) { grunt.log.error( `missing dependency '${ pkg }'`, e )}
-    return Promise.reject( e );
-  }
-}
-
-/**
- *  Tries to lod a typedoc config file (must be json format)
- * 
- *  @param   {Grunt}   grunt
- *  @param   {string}  config   - path to config file 'rollup.js'
- *  @param   {object}  cmdline  - commandline parameters in json format, overriding config entries.
- *  @returns {Promise}
- */
-module.exports.readConfig = function readConfig( grunt, config, cmdline ) {
-  if (( config !== false ) && (( typeof( config ) === _STRINGS.STRING ) || ( config instanceof String ))) {
-        return module.exports.getPackage( grunt, "rollup/loadConfigFile" ).then(({ loadConfigFile }) => {
-          if (( cmdline === undefined ) || ( cmdline === null ) || ( Object.getPrototypeOf( cmdline ) === Object.prototype )) {
-                cmdline = ( cmdline === null ) ? undefined : cmdline;
-                return loadConfigFile( config, cmdline ).then(({ options, warnings }) => {
-                        // print all warnings
-                        warnings.flush();
-                        return { options, warnings }
-                      });
-          }
-          else  return Promise.reject( new Error( _STRINGS.ERROR_MSG_PARAMETER_CMDLINE ));
-        });
-  }
-  else  return Promise.reject( new Error( _STRINGS.ERROR_MSG_PARAMETER_CONFIG ));
-}
-
-/**
- *  Return a promise for executing
- *    'node --[node opts] call-npm --[opts]'
+ *  Loads a Node.js package, defaulting to `rollup`.
  *
- *  @param  {grunt}       grunt the runtime 'instance' of grunt.
- *  @param  {grunt.task}  task  the current task
- *  @param  {Object}      obj   wrapper for options and arguments.
- * 
+ *  This function attempts to `require()` the given package name and
+ *  resolves the module. If the package cannot be found, the promise
+ *  is rejected and an optional Grunt error is logged.
+ *
+ *  @async
+ *  @function module:grunt-call-rollup/tasks/callrollup.getPackage
+ *  @param {grunt} grunt - The Grunt runtime instance, used for logging errors.
+ *  @param {string} [pkg="rollup"] - The name of the package to require.
+ *  @returns {Promise<Object>} Resolves with the required module.
+ *  @throws {Error} If the package cannot be loaded.
  */
-module.exports.execute = function execute( grunt, task, obj ) {
-  return new Promise(( resolve, reject ) => {
-    try {
-      if ( ! obj ) {
-           throw new Error( _STRINGS.ERROR_MSG_MISSING_OBJ );
-      }
-      else if (( obj?.config === undefined ) || ( obj?.config === null )) {
-           throw new Error( _STRINGS.ERROR_MSG_MISSING_CONFIG );
-      }
-      else module.exports.readConfig( grunt, obj?.config, obj?.override ).then(({ options, warnings }) => {
-           const logmsg = `${ _STRINGS.LOGINTRO } ${ JSON.stringify({ options, warnings }) }`;
-
-           if ( obj?.dryrun === true ) {
-                grunt.log.ok( logmsg );
-                resolve( obj );
-           }
-           else {
-                grunt.verbose.ok( logmsg );
-
-                module.exports.getPackage( grunt, _STRINGS.PACKAGE ).then( async ( rollup ) => {
-                  for ( const optionsObj of options ) {
-                        const bundle = await rollup.rollup( optionsObj );
-                        await Promise.all( optionsObj.output.map( bundle.write ))
-                  }
-                  resolve( rollup );
-                }).catch(( error ) => { reject( error )});
-           }
-      }).catch(( error ) => { reject( error )});
+module.exports.getPackage = async function getPackage(grunt, pkg = _STRINGS.PACKAGE) {
+  try { return require(pkg); } 
+  catch (error) {
+    if (grunt) {
+      grunt.log.error(`missing dependency '${pkg}'`, error);
     }
-    catch( error ) { reject( error )}
-  });
+    throw error;
+  }
 }
 
 /**
- *  Run the 'call_rollup' task.
+ *  Loads and parses a Rollup configuration file.
  *
- *  @return {Promise} ... required by callee to terminate async call (on "then")
+ *  This function attempts to load a Rollup config file (JS or JSON) using
+ *  Rollup's `loadConfigFile` helper. Optional `cmdline` parameters can
+ *  override configuration entries.
+ *
+ *  All warnings emitted by Rollup during config loading are flushed.
  * 
+ *  @async
+ *  @function module:grunt-call-rollup/tasks/callrollup.readConfig
+ *  @param {grunt} grunt - The Grunt runtime instance, used for logging errors.
+ *  @param {string} config - Path to the Rollup configuration file.
+ *  @param {Object} [cmdline] - Optional command-line overrides for configuration.
+ *  @returns {Promise<{options: Object[], warnings: Object}>} Resolves with
+ *          the loaded configuration and warnings object.
+ *  @throws {Error} If `config` is invalid or `cmdline` is not an object/null/undefined.
  */
-module.exports.runTask = function runTask( grunt, task ) {
-  return _m.options.toArgs( grunt, task ).then(( obj ) => { return module.exports.execute( grunt, task, obj )});
+module.exports.readConfig = async function readConfig(grunt, config, cmdline) {
+  if (config === false || !(typeof config === "string" || config instanceof String)) {
+    throw new Error(_STRINGS.ERROR_MSG_PARAMETER_CONFIG);
+  }
+
+  const { loadConfigFile } = await module.exports.getPackage(grunt, "rollup/loadConfigFile");
+
+  if (cmdline !== undefined && cmdline !== null && Object.getPrototypeOf(cmdline) !== Object.prototype) {
+    throw new Error(_STRINGS.ERROR_MSG_PARAMETER_CMDLINE);
+  }
+
+  // normalize cmdline
+  cmdline = cmdline === null ? undefined : cmdline;
+
+  const { options, warnings } = await loadConfigFile(config, cmdline);
+  warnings.flush();
+
+  return { options, warnings };
 }
 
 /**
- *  Registers the 'call_rollup' multitask.
+ * Executes the Rollup bundler using the provided task options.
  *
- *  @param  {grunt} grunt
- * 
+ * This function performs the following steps:
+ *   1. Validates the presence of the `obj` wrapper and its `config`.
+ *   2. Loads the Rollup configuration via `readConfig`.
+ *   3. Logs the configuration and any warnings.
+ *   4. If `dryrun` is true, only logs the execution plan.
+ *   5. Otherwise, loads the Rollup package and executes each bundle.
+ *
+ *  @async
+ *  @function module:grunt-call-rollup/tasks/callrollup.execute
+ *  @param {grunt} grunt - The Grunt runtime instance for logging.
+ *  @param {grunt.task} task - The current Grunt task instance.
+ *  @param {Object} obj - Wrapper object containing `config`, `override`, and `dryrun` properties.
+ *  @param {string|boolean} obj.config - Path to the Rollup config file.
+ *  @param {Object} [obj.override] - Optional command-line overrides for the configuration.
+ *  @param {boolean} [obj.dryrun=false] - If true, only prints the planned execution without running Rollup.
+ *  @returns {Promise<Object>} Resolves with either the original `obj` (for dryrun) or the Rollup instance.
+ *  @throws {Error} If `obj` or `obj.config` is missing, or if configuration loading fails.
+ */
+module.exports.execute = async function execute(grunt, task, obj) {
+  if (!obj) {
+    throw new Error(_STRINGS.ERROR_MSG_MISSING_OBJ);
+  }
+  if (obj.config === undefined || obj.config === null) {
+    throw new Error(_STRINGS.ERROR_MSG_MISSING_CONFIG);
+  }
+
+  // Load config and get options
+  const { options, warnings } = await module.exports.readConfig(grunt, obj.config, obj.override);
+
+  const logmsg = `${_STRINGS.LOGINTRO} ${JSON.stringify({ options, warnings })}`;
+
+  if (obj.dryrun === true) {
+    grunt.log.ok(logmsg);
+    return obj;
+  }
+
+  grunt.verbose.ok(logmsg);
+
+  // Load Rollup package
+  const rollup = await module.exports.getPackage(grunt, _STRINGS.PACKAGE);
+
+  // Execute each bundle
+  for (const optionsObj of options) {
+    const bundle = await rollup.rollup(optionsObj);
+    await Promise.all(optionsObj.output.map(bundle.write));
+  }
+
+  return rollup;
+}
+
+/**
+ *  Runs the `call_rollup` task for the given Grunt task instance.
+ *
+ *  This function performs the full execution pipeline:
+ *    1. Converts task-specific options into an options object via `toArgs`.
+ *    2. Executes Rollup with the resolved options using `execute`.
+ *
+ *  It returns a Promise that resolves once the task has completed, either
+ *  successfully or with a Rollup instance.
+ *
+ *  @async
+ *  @function module:grunt-call-rollup/tasks/callrollup.runTask
+ *  @param {grunt} grunt - The Grunt runtime instance.
+ *  @param {grunt.task} task - The current Grunt task instance.
+ *  @returns {Promise<Object>} Resolves with the Rollup instance or task options, depending on execution.
+ *  @throws {Error} If option resolution or Rollup execution fails.
+ */
+module.exports.runTask = async function runTask(grunt, task) {
+  const obj = await options.toArgs(grunt, task);
+  return module.exports.execute(grunt, task, obj);
+}
+
+/**
+ *  Registers the `call_rollup` multitask with Grunt.
+ *
+ *  This is the main integration point for `grunt-call-rollup` in a Gruntfile.
+ *  It wraps the asynchronous task execution pipeline:
+ *    1. Resolves task options via `runTask`.
+ *    2. Handles logging and error reporting.
+ *
+ *  @function registerMultiTask
+ *  @memberof module:grunt-call-rollup/tasks/callrollup
+ *  @param {grunt} grunt - The Grunt runtime instance.
  */
 module.exports.registerMultiTask = function registerMultiTask( grunt ) {
-  grunt.registerMultiTask( _m.const.TASKNAME, _m.const.TASKDESCRIPTION,
+  grunt.registerMultiTask( constants.TASKNAME, constants.TASKDESCRIPTION,
     /* istanbul ignore next */ function () {
     const task = this;
     const done = task.async();

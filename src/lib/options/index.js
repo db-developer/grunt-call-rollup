@@ -1,35 +1,34 @@
 /**
- *	index.js: grunt-call-rollup/options
+ * lib/options/index.js: grunt-call-rollup
+ * 
+ * Aggregated options API for `grunt-call-rollup`.
  *
- *  @module grunt-call-rollup/options
+ * This module exposes the public option-related functions that are
+ * intended for external consumption.
+ *
+ * @module grunt-call-rollup/options
  *
  *//*
- *  © 2024, slashlib.org.
+ *  © 2024, db-developer.
  *
- *  index.js  is distributed WITHOUT ANY WARRANTY; without even the implied
- *  warranty  of  MERCHANTABILITY  or  FITNESS  FOR  A PARTICULAR  PURPOSE.
- *
+ *  Distributed  WITHOUT  ANY WARRANTY;  without  even the  implied
+ *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 "use strict";
 
-/**
- *  Module table
- *  @ignore
- */
-const _m = { callrollup: require( "./callrollup" )};
+const callrollup = require( "./callrollup" );
 
 /**
- *  Create rollup arguments
+ *  Converts task-specific options for the `call_rollup` task into
+ *  a plain options object used for executing Rollup.
  *
- *  @see    Function [toArgs]{@link callrollup.md#.toArgs}
- *          published by module callrollup for a detailed function description.
+ *  This is a re-export of function [toArgs]{@link callrollup.md#.toArgs}
+ *  published by module [options/callrollup]{@link callrollup.md}
  *
  *  @function module:grunt-call-rollup/options.toArgs
- *  @param  {grunt}           grunt
- *  @param  {grunt.task}      task
- *
- *  @return {Promise<Object>} obj
- *  @return {Array<strings>}  obj.args  an array of arguments
- *  @return {Array<any>}      obj.opts  an array of options
+ *  @param   {grunt}        grunt    The Grunt runtime instance
+ *  @param   {grunt.task}   task     The current Grunt task instance
+ *  @param   {Object}      [options] Optional task options override
+ *  @returns {Promise<Object>}       Resolved options object
  */
-module.exports.toArgs = _m.callrollup.toArgs
+module.exports.toArgs = callrollup.toArgs

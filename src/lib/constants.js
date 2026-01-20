@@ -1,33 +1,30 @@
-
 /**
- *	constants.js: grunt-call-rollup
+ * lib/constants.js: grunt-call-rollup
  *
- *  @module grunt-call-rollup/constants
+ * @module grunt-call-rollup/constants
  *
  *//*
  *  © 2024, db-developer.
  *
- *  constants.js  is distributed  WITHOUT  ANY WARRANTY;  without  even  the
- *  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
+ *  Distributed  WITHOUT  ANY WARRANTY;  without  even the  implied
+ *  warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 "use strict";
 
 /**
- *  String table
- *  @ignore
+ *  The task name used to register the 'call_rollup' multitask.
+ *
+ *  @constant
+ *  @type {string}
+ *  @default
  */
-const _STRINGS = {
-  PROPERTY_TASKNAME:    "TASKNAME",
-  PROPERTY_TASKDESC:    "TASKDESCRIPTION",
-  TASKNAME:             "call_rollup",
-  TASKDESCRIPTION:      "Run rollup bundler from grunt."
-};
+module.exports.TASKNAME = "call_rollup";
 
-// Module exports:
-Object.defineProperty( module.exports, _STRINGS.PROPERTY_TASKNAME, {
-  value:    _STRINGS.TASKNAME,
-  writable: false, enumerable: true, configurable: false });
-Object.defineProperty( module.exports, _STRINGS.PROPERTY_TASKDESC, {
-  value:    _STRINGS.TASKDESCRIPTION,
-  writable: false, enumerable: true, configurable: false });
+/**
+ *  The description used for the 'call_rollup' multitask.
+ *
+ *  @constant
+ *  @type {string}
+ *  @default
+ */
+module.exports.TASKDESCRIPTION = "Run rollup bundler from grunt.";
