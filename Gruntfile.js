@@ -39,8 +39,6 @@ module.exports = function( grunt ) {
                                          strings.MKDIR,    `${ strings.COPY  }:build`,
                                          strings.JSONFILE,  strings.BUILDRO ]);
 
-  grunt.registerTask( strings.BUILDWP, [ strings.WEBPACK ]);
-
   grunt.registerTask( strings.BUILDRO, [ strings.ROLLUP  ]);
 
   // run coverage (required by travis)
@@ -54,8 +52,7 @@ module.exports = function( grunt ) {
   grunt.registerTask( strings.DEPLOY,  [ `${ strings.COPY }:deploy` ]);
 
   // run dist: clean dist and move current.tgz from cwd to dist
-  grunt.registerTask( strings.DIST,    [ `${ strings.SHELL }:npm_pack`, `${ strings.CLEAN }:dist`, 
-                                         strings.MOVE ]);
+  grunt.registerTask( strings.DIST,    [ `${ strings.CLEAN }:dist`, `${ strings.CALL_NPM }:pack` ]);
 
   // run docs
   grunt.registerTask( strings.DOCS,    [ strings.ESLINT, strings.JSDOC2MD ]);
