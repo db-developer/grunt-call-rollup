@@ -1,7 +1,3 @@
-# grunt-call-rollup
-
-Integrate Rollup builds directly into Grunt processes using the Rollup JavaScript API.
-
 [![npm version](https://img.shields.io/npm/v/grunt-call-rollup?color=blue)](https://www.npmjs.com/package/grunt-call-rollup)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![jsdoc](https://img.shields.io/static/v1?label=jsdoc&message=%20api%20&color=blue)](https://jsdoc.app/)
@@ -9,6 +5,12 @@ Integrate Rollup builds directly into Grunt processes using the Rollup JavaScrip
 [![dependencies](https://img.shields.io/librariesio/release/npm/grunt-call-rollup)](https://libraries.io/)
 ![Build & Test](https://github.com/db-developer/grunt-call-rollup/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/db-developer/grunt-call-rollup/branch/master/graph/badge.svg)](https://codecov.io/gh/db-developer/grunt-call-rollup)
+
+[BOTTOM](#how-the-task-works) [AI](AI.md) [CHANGELOG](CHANGELOG.md) [LICENSE](LICENSE)
+
+# grunt-call-rollup
+
+Integrate Rollup builds directly into Grunt processes using the Rollup JavaScript API.
 
 ## Content
 
@@ -84,3 +86,5 @@ This means:
 - No shell execution is involved
 - No dependency on a globally installed Rollup binary
 - Full control over the Rollup configuration object at runtime
+
+[TOP](#grunt-call-rollup) [AI](AI.md) [CHANGELOG](CHANGELOG.md) [LICENSE](LICENSE)
