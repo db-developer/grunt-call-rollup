@@ -1,3 +1,5 @@
+[BOTTOM](#001---2024-08-26) [AI](AI.md) [LICENSE](LICENSE) [README](README.md)
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -11,6 +13,12 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - No fixes yet
+
+## [1.0.1] - 2026-03-0
+
+- Added AI.md to document the use of AI in the development of this project.
+- Added links to AI.md, CHANGELOG.md and LICENSE.md for better navigation and documentation.
+- Updated package.json to reflect the latest version and dependencies.
 
 ## [1.0.0] - 2026-01-20
 
@@ -33,3 +41,5 @@ All notable changes to this project will be documented in this file.
 ## [0.0.1] - 2024-08-26
 
 Initial version
+
+[TOP](#changelog) [AI](AI.md) [LICENSE](LICENSE) [README](README.md)
